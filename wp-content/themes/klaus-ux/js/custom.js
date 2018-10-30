@@ -37,8 +37,8 @@ $(document).ready(function () {
     $('.top-block__slider').slick({
         dots: true,
         infinite: true,
-        slidesToShow: 3,
-        slidesToScroll: 3,
+        slidesToShow: 1,
+        slidesToScroll: 1,
         autoplay: true,
         autoplaySpeed: 6000,
         arrows: false,
@@ -114,7 +114,7 @@ jQuery(document).ready(function($){
 //-------------------------------------------------
 (function($) {
     $('#nav').slicknav({
-        prependTo: '#mobile-nav'
+        prependTo: '#nav-block'
     });
 
     //close slicknav menu after click outside an element
