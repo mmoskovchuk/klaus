@@ -34,7 +34,7 @@
 //-------------------------------------------------
 
 $(document).ready(function () {
-    $('.top-block__slider').slick({
+    /*$('.top-block__slider').slick({
         dots: true,
         infinite: true,
         slidesToShow: 1,
@@ -54,7 +54,7 @@ $(document).ready(function () {
                 }
             }
         ]
-    });
+    });*/
 });
 
 //SIDEBAR MENU

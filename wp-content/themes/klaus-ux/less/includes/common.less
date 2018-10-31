@@ -14,11 +14,22 @@ body {
   color: #707070;
   margin: 0;
   padding: 0;
+  display: grid;
+  grid-template-areas:
+          "header header header header header"
+          "top-block"
+          "advantages"
+          "content"
+          "footer footer";
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+  grid-gap: 10px;
+  height: 100vh;
+  margin: 0;
 }
 
 .grid-container {
-  display: grid;
-  max-width: 90vw;
+  max-width: 88vw;
   margin: 0 auto;
 }
 

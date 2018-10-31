@@ -1,25 +1,28 @@
 /*HEADER: LAYOUT*/
 
 .header {
-  background: @c2;
+  grid-area: header;
+  background: @c1;
   height: 70px;
-  color: @c1;
+  color: @c2;
   position: fixed;
   width: 100%;
   top: 0;
   z-index: 999;
+  box-shadow: 0 -5px 15px;
   nav#nav {
     display: none;
   }
   &__grid-block {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: auto repeat(3,1fr) auto;
     grid-template-rows: 70px;
     > div {
       align-self: center;
       justify-self: center;
     }
     a {
+      font-weight: 600;
       text-transform: uppercase;
       text-decoration: none;
       color: inherit;
@@ -41,16 +44,46 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-column-gap: 25px;
-    a {
+    a:nth-child(1) {
       svg {
         path {
-          fill: #8b86ff;
+          fill: @c2;
         }
       }
       &:hover {
         svg {
           path {
-            fill: #acadff;
+            fill: #004c88cc;
+            transition: 0.3s ease-out;
+          }
+        }
+      }
+    }
+    a:nth-child(2) {
+      svg {
+        path {
+          fill: @c2;
+        }
+      }
+      &:hover {
+        svg {
+          path {
+            fill: #008effcc;
+            transition: 0.3s ease-out;
+          }
+        }
+      }
+    }
+    a:nth-child(3) {
+      svg {
+        path {
+          fill: @c2;
+        }
+      }
+      &:hover {
+        svg {
+          path {
+            fill: #ff0000cc;
             transition: 0.3s ease-out;
           }
         }
