@@ -11,7 +11,7 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
 
     <?php if (is_front_page()) : ?>
-        <link rel="alternate" hreflang="x-default" href="//ies.nau.edu.ua"/>
+        <link rel="alternate" hreflang="x-default" href="//klaus.in.ua"/>
     <?php endif; ?>
 
     <?php wp_head(); ?>
@@ -51,29 +51,39 @@ $additional_body_class = 'page-' . $current_page;
                 <a rel="nofollow" href="//www.facebook.com/stoklaus/" target="_blank">
                     <i class="fab fa-facebook-f fa-2x"></i>
                 </a>
-                <a rel="nofollow" href="//m.me/162316441371731" target="_blank">
+                <a rel="nofollow" href="//m.me/stoklaus" target="_blank">
                     <i class="fab fa-facebook-messenger fa-2x"></i>
                 </a>
                 <a rel="nofollow" href="//www.instagram.com/sto_klaus/" target="_blank">
                     <i class="fab fa-instagram fa-2x"></i>
                 </a>
             </div>
-            <div class="header__menu" id="nav-block"></div>
-        </div>
 
+            <div class="header__menu" id="nav-block">
+                <input type="checkbox" id="hmt" class="hidden-menu-ticker">
+                <label class="btn-menu" for="hmt">
+                    <span class="first"></span>
+                    <span class="second"></span>
+                    <span class="third"></span>
+                </label>
+                <ul class="hidden-menu">
+                    <nav id="nav">
+                        <?php
+                        $nav_args = array(
+                            'theme_location' => 'nav',
+                            'container' => '',
+                            'depth' => 2
+                        );
+                        wp_nav_menu($nav_args);
+                        ?>
+                    </nav>
+                </ul>
+            </div>
+
+        </div>
     </div>
 </header>
 
-<nav id="nav">
-    <?php
-    $nav_args = array(
-        'theme_location' => 'nav',
-        'container' => '',
-        'depth' => 2
-    );
-    wp_nav_menu($nav_args);
-    ?>
-</nav>
 
 <!--MAIN-->
 <div id="main" class="main">

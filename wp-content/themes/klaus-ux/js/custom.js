@@ -113,7 +113,7 @@ jQuery(document).ready(function($){
 //MOBILE MENU (plugin: slicknav)
 //-------------------------------------------------
 (function($) {
-    $('#nav').slicknav({
+    /*$('#nav').slicknav({
         prependTo: '#nav-block'
     });
 
@@ -129,6 +129,6 @@ jQuery(document).ready(function($){
     $('.slicknav_btn').on('click', function(){
         if ($(this).hasClass('slicknav_open')) $('#header').addClass('mmenu-open');
         else $('#header').removeClass('mmenu-open');
-    })
+    })*/
 })(jQuery);
 

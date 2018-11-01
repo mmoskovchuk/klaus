@@ -1,4 +1,4 @@
-var domain = 'http://http://ies.nau.edu.ua.local/'; //local url
+var domain = 'http://klaus.in.ua.local/'; //local url
 var path_to_theme = '/wp-content/themes/klaus-ux/'; //url with trailing slash
 
 //NPM-MODULES

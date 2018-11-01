@@ -1,15 +1,15 @@
 <section class="top-block">
-    <img src="<?php bloginfo('template_url'); ?>/img/slider/4.jpg"
+    <img src="<?php bloginfo('template_url'); ?>/img/top-bg.jpg"
          alt="<?php bloginfo('name'); ?>" class="top-block__bg"/>
 
 
     <div class="grid-container">
         <div class="top-block__text">
-            <h2 class="top-block__desc-h2">
+            <h1 class="top-block__desc-h1">
                 станция<br>
                 технического<br>
                 обслуживания
-            </h2>
+            </h1>
             <p class="top-block__desc-p">работаем с 2004 года</p>
         </div>
     </div>
