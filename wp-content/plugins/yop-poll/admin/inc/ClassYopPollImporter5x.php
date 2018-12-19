@@ -99,7 +99,7 @@ class ClassYopPollImporter5x {
 						$results_moment[] = 'after-vote';
 					}
 					$show_results_to = [];
-					if ( isset( $unserialized_meta['view_results_permissions'] ) ) {
+					if ( isset( $unserialized_meta['view_results_permissions'] ) && is_array( $unserialized_meta['view_results_permissions'] ) ) {
 						foreach ( $unserialized_meta['view_results_permissions'] as $vrp ) {
 							if ( 'registered' === $vrp ) {
 								$show_results_to[] = 'registered';
@@ -218,7 +218,7 @@ class ClassYopPollImporter5x {
 						],
 						'options'                => [
 							'poll'    => [
-								'voteButtonLabel'             => $unserialized_meta['vote_button_label'],
+								'voteButtonLabel'             => isset( $unserialized_meta['vote_button_label'] ) && '' != $unserialized_meta['vote_button_label'] ? $unserialized_meta['vote_button_label'] : 'Vote',
 								'showResultsLink'             => 'no',
 								'resultsLabelText'            => 'Results',
 								'showTotalVotes'              => isset( $unserialized_meta['view_total_votes'] ) && '' != $unserialized_meta['view_total_votes'] ? $unserialized_meta['view_total_votes'] : 'no',
@@ -227,7 +227,7 @@ class ClassYopPollImporter5x {
 								'startDateCustom'             => $poll->poll_start_date,
 								'endDateOption'               => $poll_end_date_option,
 								'endDateCustom'               => $poll_end_date,
-								'redirectAfterVote'           => isset( $unserialized_meta['redirect_after_vote'] ) && '' != $unserialized_meta['view_total_answers'] ? $unserialized_meta['view_total_answers'] : 'no',
+								'redirectAfterVote'           => isset( $unserialized_meta['redirect_after_vote'] ) && '' != $unserialized_meta['redirect_after_vote'] ? $unserialized_meta['redirect_after_vote'] : 'no',
 								'redirectUrl'                 => $unserialized_meta['redirect_after_vote_url'],
 								'resetPollStatsAutomatically' => isset( $unserialized_meta['schedule_reset_poll_stats'] ) && '' != $unserialized_meta['schedule_reset_poll_stats'] ? $unserialized_meta['schedule_reset_poll_stats'] : 'no',
 								'resetPollStatsOn'            => $unserialized_meta['schedule_reset_poll_date'],
@@ -361,7 +361,7 @@ class ClassYopPollImporter5x {
 										'answers'    => $pollQuestionAnswersArray,
 										'options'    => [
 											'allowOtherAnswers'            => isset( $unserialized_q_meta['allow_other_answers'] ) && '' != $unserialized_q_meta['allow_other_answers'] ? $unserialized_q_meta['allow_other_answers'] : 'no',
-											'otherAnswersLabel'            => isset( $unserialized_q_meta['other_answers_label'] ) && '' !== $unserialized_q_meta['other_answers_label'] ? $unserialized_q_meta['other_answers_label'] : 'Other',
+											'otherAnswersLabel'            => isset( $unserialized_q_meta['other_answers_label'] ) && '' != trim( $unserialized_q_meta['other_answers_label'] ) ? $unserialized_q_meta['other_answers_label'] : 'Other',
 											'addOtherAnswers'              =>
 												isset( $unserialized_q_meta['add_other_answers_to_default_answers'] ) ? $unserialized_q_meta['add_other_answers_to_default_answers'] : 'no',
 											'displayOtherAnswersInResults' =>
@@ -436,7 +436,7 @@ class ClassYopPollImporter5x {
 										'answers'    => $pollQuestionAnswersArray,
 										'options'    => [
 											'allowOtherAnswers'            => isset( $unserialized_q_meta['allow_other_answers'] ) && '' != $unserialized_q_meta['allow_other_answers'] ? $unserialized_q_meta['allow_other_answers'] : 'no',
-											'otherAnswersLabel'            => isset( $unserialized_q_meta['other_answers_label'] ) ? $unserialized_q_meta['other_answers_label'] : 'Other',
+											'otherAnswersLabel'            => isset( $unserialized_q_meta['other_answers_label'] ) && '' != trim( $unserialized_q_meta['other_answers_label'] ) ? $unserialized_q_meta['other_answers_label'] : 'Other',
 											'addOtherAnswers'              =>
 												isset( $unserialized_q_meta['add_other_answers_to_default_answers'] ) ? $unserialized_q_meta['add_other_answers_to_default_answers'] : 'no',
 											'displayOtherAnswersInResults' =>
@@ -444,8 +444,8 @@ class ClassYopPollImporter5x {
 											'allowMultipleAnswers'         =>
 												isset( $unserialized_q_meta['allow_multiple_answers'] ) ? $unserialized_q_meta['allow_multiple_answers'] : 'no',
 											'multipleAnswersMinim'         =>
-												isset( $unserialized_q_meta['allow_multiple_answers_min_number'] ) ? $unserialized_q_meta['allow_multiple_answers_min_number'] : 1,
-											'multipleAnswersMaxim'         => isset( $unserialized_q_meta['allow_multiple_answers_number'] ) ? $unserialized_q_meta['allow_multiple_answers_number'] : 3,
+												isset( $unserialized_q_meta['allow_multiple_answers_min_number'] ) && '' != $unserialized_q_meta['allow_multiple_answers_min_number'] ? $unserialized_q_meta['allow_multiple_answers_min_number'] : 1,
+											'multipleAnswersMaxim'         => isset( $unserialized_q_meta['allow_multiple_answers_number'] ) && '' != $unserialized_q_meta['allow_multiple_answers_number'] ? $unserialized_q_meta['allow_multiple_answers_number'] : 3,
 											'answersDisplay'               => $answersDisplay,
 											'answersColumns'               =>
 												isset( $unserialized_q_meta['display_answers_tabulated_cols'] ) && '' !== $unserialized_q_meta['display_answers_tabulated_cols'] ? $unserialized_q_meta['display_answers_tabulated_cols'] : 2
@@ -470,6 +470,8 @@ class ClassYopPollImporter5x {
 					}
 					$pollArray['elements'] = $pollElementsArray;
 					$responseArray         = YOP_Poll_Polls::add( json_decode( json_encode( $pollArray ) ) );
+                    error_log(print_r($pollArray, true));
+					error_log(print_r($responseArray, true));
 					if ( '' !== $responseArray['poll_id'] ) {
 						$result = $wpdb->update( $polls_table_name, array( 'processed' => true ), array( 'ID' => $poll->ID ) );
 						self::$processed_polls += $result;
@@ -2473,5 +2475,4 @@ class ClassYopPollImporter5x {
             wp_die();
         }
 	}
-
 }

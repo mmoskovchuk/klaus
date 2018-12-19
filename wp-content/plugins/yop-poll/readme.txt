@@ -84,7 +84,7 @@ Yes, you can run multiple polls at the same time or you can schedule them to beg
 = Can I ask for additional information from my voters? =
 
 Yes, you can customize your poll to request additional information. Eg. name, email, age, profession.
-To include this, when you create your poll using the "Add New" form, expand "Custom Fields" section and include as many requests as you need.
+To include this, when you create your poll using the "Add New" form, on Questions&Answers tab drag and drop "Custom Field" element and include as many requests as you need.
 
 = How do I check the results? =
 
@@ -99,7 +99,7 @@ Edit your poll and in "View Results:" choose "After Poll End Date" and save.
 
 = Can I add more than one question to a poll? =
 
-You can have only one question per poll. Pro Version supports multiple questions per poll.
+You can have only one question per poll.
 
 == Screenshots ==
 
@@ -115,6 +115,14 @@ You can have only one question per poll. Pro Version supports multiple questions
 
 == Changelog ==
 
+= 6.0.3 =
+* added support for reCaptcha v2
+* added scroll to thank you/error message after voting
+* fixed spacing with total votes
+* fixed issue with thank you message not being displayed when GDPR enabled
+* fixed XSS vulnerability
+* updated notification messages for blocks and limits
+
 = 6.0.2 =
 * load plugin js and css only on plugin pages
 * fixed issue with exporting custom fields data
@@ -124,7 +132,7 @@ You can have only one question per poll. Pro Version supports multiple questions
 * fixed issue with captcha
 * added support for poll archive page
 * added ability to set number of polls displayed per page
-* fixed issue with results color when poll is ended
+* fixed issue with results colour when poll is ended
 * fixed issue with generating page for poll
 * removed p tag from notification messages
 * fixed issue with gdpr consent checkbox

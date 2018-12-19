@@ -19,14 +19,13 @@ var jade = require('gulp-jade');
 var changed = require('gulp-changed');
 
 var util = require('gulp-util');
-var is_prod = util.env.production;
 
 var critical = require('critical');
 
 //TASK: gulp
 //--------------------------------------------------
 gulp.task('default', ['less', 'js', 'jade'], function () {
-	is_prod ? gulp.start('img') : gulp.start(/*'browser-sync',*/ 'watch');
+	gulp.start(/*'browser-sync',*/ 'watch');
 });
 
 //TASK: gulp watch
@@ -51,13 +50,11 @@ gulp.task('img', function() {
 gulp.task('less', function () {
 	gulp.src(['./less/style.less', './less/plugins.less'])
 	.pipe(plumber())
-	//.pipe(!is_prod ? sourcemaps.init() : util.noop())
 	.pipe(less())
 	.pipe(cleanCSS())
 	.pipe(rename({extname: ".min.css"}))
-	.pipe(autoprefixer({browsers: ['last 50 versions']}))
-	.pipe(is_prod ? cleanCSS({compatibility: 'ie8', keepSpecialComments: 1}) : util.noop() )
-	//.pipe(!is_prod ? sourcemaps.write() : util.noop())
+	.pipe(autoprefixer({grid: true, browsers: ['>2%']}))
+	.pipe(cleanCSS({compatibility: 'ie10', keepSpecialComments: 1}))
 	.pipe(gulp.dest('./css'))
 });
 
@@ -67,10 +64,8 @@ gulp.task('less', function () {
 gulp.task('js', function() {
 	return gulp.src(['./js/plugins/**/*.js', './js/custom.js'])
 	.pipe(plumber())
-	//.pipe(!is_prod ? sourcemaps.init() : util.noop())
 	.pipe(concat('./scripts.min.js'))
 	.pipe(uglify())
-	//.pipe(!is_prod ? sourcemaps.write() : util.noop())
 	.pipe(gulp.dest("./js"));
 });
 

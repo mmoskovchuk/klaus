@@ -32,6 +32,9 @@ class YOP_Poll_Votes {
 		if ( ( false === self::$errors_present ) && ( 'yes' === $poll->meta_data['options']['poll']['useCaptcha'] ) ) {
 			self::validate_captcha( $vote, $poll );
 		}
+		if ( ( false === self::$errors_present ) && ( 'yes-recaptcha' === $poll->meta_data['options']['poll']['useCaptcha'] ) ) {
+			self::validate_recaptcha( $vote, $poll );
+		}
 		if ( false === self::$errors_present ) {
 			if ( 'yes' === $poll->meta_data['options']['poll']['enableGdpr']  ) {
 				switch ( $poll->meta_data['options']['poll']['gdprSolution'] ) {
@@ -233,6 +236,39 @@ class YOP_Poll_Votes {
 			}
 		}
 	}
+	public static function validate_recaptcha( $vote, $poll ) {
+		$captcha_result = false;
+		if ( 'yes-recaptcha' === $poll->meta_data['options']['poll']['useCaptcha'] ) {
+			if ( '' !== $vote->reCaptcha ) {
+				$curl_link = 'https://www.google.com/recaptcha/api/siteverify';
+				$integrations = YOP_Poll_Settings::get_integrations();
+				$data = array(
+					'secret' => $integrations['reCaptcha']['secret_key'],
+					'response' => $vote->reCaptcha
+				);
+				$curl_con = curl_init();
+				curl_setopt( $curl_con, CURLOPT_URL, $curl_link );
+				curl_setopt( $curl_con, CURLOPT_POST, true );
+				curl_setopt( $curl_con, CURLOPT_POSTFIELDS, http_build_query( $data ) );
+				curl_setopt( $curl_con, CURLOPT_RETURNTRANSFER, true );
+				$response = curl_exec( $curl_con );
+				$response_decoded = json_decode( $response );
+				if ( false === $response_decoded->success ) {
+					self::$errors_present = true;
+					array_push(
+						self::$error_text,
+						__( 'Invalid security code', 'yop-poll' )
+					);
+				}
+			} else {
+				self::$errors_present = true;
+				array_push(
+					self::$error_text,
+					__( 'Invalid security code', 'yop-poll' )
+				);
+			}
+		}
+	}
 	public static function validate_voter_against_bans( $vote, $poll ) {
 		$query = "SELECT * from {$GLOBALS['wpdb']->yop_poll_bans} WHERE `poll_id` IN ('0', %s) AND "
 				. "(`b_by` = 'ip' AND `b_value` = %s) OR "
@@ -243,7 +279,7 @@ class YOP_Poll_Votes {
 			self::$errors_present = true;
 			array_push(
 				self::$error_text,
-				__( 'Vote not allowed by ban', 'yop-poll' )
+				__( 'Vote not allowed', 'yop-poll' )
 			);
 		}
 	}
@@ -276,7 +312,7 @@ class YOP_Poll_Votes {
 				self::$errors_present = true;
 				array_push(
 					self::$error_text,
-					__( 'Vote not allowed by cookie value', 'yop-poll' )
+					__( 'Vote not allowed', 'yop-poll' )
 				);
 			}
 		}
@@ -309,7 +345,7 @@ class YOP_Poll_Votes {
 					self::$errors_present = true;
 					array_push(
 						self::$error_text,
-						__( 'Vote not allowed by ipaddress', 'yop-poll' )
+						__( 'Vote not allowed', 'yop-poll' )
 					);
 				}
 			}
@@ -343,7 +379,7 @@ class YOP_Poll_Votes {
 					self::$errors_present = true;
 					array_push(
 						self::$error_text,
-						__( 'Vote not allowed by user id', 'yop-poll' )
+						__( 'Vote not allowed', 'yop-poll' )
 					);
 				}
 			}
@@ -377,7 +413,7 @@ class YOP_Poll_Votes {
 					self::$errors_present = true;
 					array_push(
 						self::$error_text,
-						__( 'Limit for allowed votes reached', 'yop-poll' )
+						__( 'Vote not allowed', 'yop-poll' )
 					);
 				}
 			}

@@ -4,6 +4,7 @@ class YOP_Poll_Polls {
 			$error_text,
 			$text_size_allowed = array( 'small', 'medium', 'large' ),
 			$yes_no_allowed = array( 'yes', 'no' ),
+			$captcha_allowed = array( 'yes', 'yes-recaptcha', 'no' ),
 			$answers_display_allowed = array( 'vertical', 'horizontal', 'columns' ),
 			$date_values_allowed = array( 'now', 'custom', 'never', 'custom-date' ),
 			$reset_stats_allowed = array( 'hours', 'days' ),
@@ -1501,7 +1502,7 @@ class YOP_Poll_Polls {
 			}
 			if (
 				( false === self::$errors_present ) &&
-				( !in_array( $poll->options->poll->useCaptcha, self::$yes_no_allowed ) )
+				( !in_array( $poll->options->poll->useCaptcha, self::$captcha_allowed ) )
 			){
 				self::$errors_present = true;
 				self::$error_text = __( 'Data for "Use Captcha" is invalid', 'yop-poll' );

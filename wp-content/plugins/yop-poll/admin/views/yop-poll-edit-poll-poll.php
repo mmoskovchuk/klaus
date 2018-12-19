@@ -285,16 +285,27 @@
 				</div>
 				<div class="col-md-9">
 					<?php
-			        if ( 'yes' === $poll->meta_data['options']['poll']['useCaptcha'] ) {
-			            $use_captcha_yes = 'selected';
-			            $use_captcha_no = '';
-			        } else {
-			            $use_captcha_yes = '';
-			            $use_captcha_no = 'selected';
-			        }
+					$use_captcha_yes = '';
+					$use_reCaptcha_yes = '';
+					$use_captcha_no = '';
+					switch ( $poll->meta_data['options']['poll']['useCaptcha'] ) {
+						case 'yes': {
+							$use_captcha_yes = 'selected';
+							break;
+						}
+						case 'yes-recaptcha': {
+							$use_reCaptcha_yes = 'selected';
+							break;
+						}
+						case 'no': {
+							$use_captcha_no = 'selected';
+							break;
+						}
+					}
 			        ?>
 			        <select class="use-captcha" style="width:100%">
-			            <option value="yes" <?php echo $use_captcha_yes;?>><?php _e( 'Yes', 'yop-poll' );?></option>
+			            <option value="yes" <?php echo $use_captcha_yes;?>><?php _e( 'Yes, use built in Captcha', 'yop-poll' );?></option>
+						<option value="yes-recaptcha"  <?php echo $use_reCaptcha_yes;?>><?php _e( 'Yes, use reCaptcha', 'yop-poll' );?></option>
 			            <option value="no" <?php echo $use_captcha_no;?>><?php _e( 'No', 'yop-poll' );?></option>
 			        </select>
 				</div>

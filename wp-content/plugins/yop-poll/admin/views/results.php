@@ -301,7 +301,7 @@
                                                 <input type="hidden" name="page" value="yop-polls">
                                                 <input type="hidden" name="exportCustoms" value="true">
                                                 <input type="hidden" name="action" value="results">
-                                                <input type="hidden" name="poll_id" value="<?php echo isset( $_REQUEST['poll_id'] ) ? $_REQUEST['poll_id'] : ''; ?>">
+                                                <input type="hidden" name="poll_id" value="<?php echo $poll->id;?>">
                                                 <button class="button" type="submit">Export</button>
                                             </form>
                                             <table class="table" id="cf-table">

@@ -15,6 +15,15 @@ final class WSAL_AlertManager {
 	protected $_alerts = array();
 
 	/**
+	 * Array of Deprecated Events
+	 *
+	 * @since 3.3
+	 *
+	 * @var array
+	 */
+	protected $deprecated_events = array();
+
+	/**
 	 * Array of loggers (WSAL_AbstractLogger).
 	 *
 	 * @var array
@@ -50,6 +59,15 @@ final class WSAL_AlertManager {
 	private static $log_events_schedule_hook = 'wsal_log_events_ext_db';
 
 	/**
+	 * WP Users
+	 *
+	 * Store WP Users for caching purposes.
+	 *
+	 * @var array
+	 */
+	private $wp_users = array();
+
+	/**
 	 * Create new AlertManager instance.
 	 *
 	 * @param WpSecurityAuditLog $plugin - Instance of WpSecurityAuditLog.
@@ -62,6 +80,17 @@ final class WSAL_AlertManager {
 
 		add_action( 'shutdown', array( $this, '_CommitPipeline' ) );
 		add_action( 'wsal_init', array( $this, 'schedule_log_events' ) );
+
+		/**
+		 * Filter: `wsal_deprecated_event_ids`
+		 *
+		 * Deprecated event ids filter.
+		 *
+		 * @since 3.3
+		 *
+		 * @param array $deprecated_events - Array of deprecated event ids.
+		 */
+		$this->deprecated_events = apply_filters( 'wsal_deprecated_event_ids', array( 2004, 2005, 2006, 2007, 2009, 2013, 2015, 2018, 2020, 2022, 2026, 2028, 2059, 2060, 2061, 2064, 2066, 2069, 2075, 2087, 2102, 2103, 2113, 2114, 2115, 2116, 2117, 2118, 5020, 5026, 2107, 2003, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2056, 2057, 2058, 2063, 2067, 2068, 2070, 2072, 2076, 2088, 2104, 2105, 5021, 5027, 2108 ) );
 	}
 
 	/**
@@ -96,7 +125,8 @@ final class WSAL_AlertManager {
 	 * @param string $file Path to file.
 	 */
 	public function AddFromFile( $file ) {
-		$this->AddFromClass( $this->plugin->GetClassFileClassName( $file ) );
+		$file = basename( $file, '.php' );
+		$this->AddFromClass( WSAL_CLASS_PREFIX . 'Loggers_' . $file );
 	}
 
 	/**
@@ -239,7 +269,7 @@ final class WSAL_AlertManager {
 					$this->Log( $type, $data );
 				} elseif ( $_retry ) {
 					// This is the last attempt at loading alerts from default file.
-					$this->plugin->LoadDefaults();
+					$this->plugin->load_defaults();
 					return $this->_CommitItem( $type, $data, $cond, false );
 				} else {
 					// In general this shouldn't happen, but it could, so we handle it here.
@@ -352,7 +382,11 @@ final class WSAL_AlertManager {
 	 * @return boolean True if enabled, false otherwise.
 	 */
 	public function IsEnabled( $type ) {
-		return ! in_array( $type, $this->GetDisabledAlerts() );
+		$disabled_events = $this->GetDisabledAlerts();
+		if ( 'no' !== $this->plugin->GetGlobalOption( 'disable-visitor-events', 'no' ) ) {
+			$disabled_events = array_merge( $disabled_events, $this->get_public_events() );
+		}
+		return ! in_array( $type, $disabled_events, true );
 	}
 
 	/**
@@ -437,15 +471,13 @@ final class WSAL_AlertManager {
 	/**
 	 * Return alert given alert type.
 	 *
-	 * @param integer $type - Alert type.
+	 * @param integer $type    - Alert type.
 	 * @param mixed   $default - Returned if alert is not found.
 	 * @return WSAL_Alert
 	 */
 	public function GetAlert( $type, $default = null ) {
-		foreach ( $this->_alerts as $alert ) {
-			if ( $alert->type == $type ) {
-				return $alert;
-			}
+		if ( isset( $this->_alerts[ $type ] ) ) {
+			return $this->_alerts[ $type ];
 		}
 		return $default;
 	}
@@ -457,6 +489,17 @@ final class WSAL_AlertManager {
 	 */
 	public function GetAlerts() {
 		return $this->_alerts;
+	}
+
+	/**
+	 * Returns all deprecated events.
+	 *
+	 * @since 3.3
+	 *
+	 * @return WSAL_Alert[]
+	 */
+	public function get_deprecated_events() {
+		return $this->deprecated_events;
 	}
 
 	/**
@@ -642,6 +685,91 @@ final class WSAL_AlertManager {
 	}
 
 	/**
+	 * Return alerts for MainWP Extension.
+	 *
+	 * @param integer $limit – Number of alerts to retrieve.
+	 * @return stdClass
+	 */
+	public function get_mainwp_extension_events( $limit = 100 ) {
+		$mwp_events = new stdClass();
+
+		// Check if limit is not empty.
+		if ( empty( $limit ) ) {
+			return $mwp_events;
+		}
+
+		// Initiate query occurrence object.
+		$events_query = new WSAL_Models_OccurrenceQuery();
+		$events_query->addCondition( 'site_id = %s ', 1 );
+		$events_query->addOrderBy( 'created_on', true );
+		$events_query->setLimit( $limit );
+		$events = $events_query->getAdapter()->Execute( $events_query );
+
+		if ( ! empty( $events ) && is_array( $events ) ) {
+			foreach ( $events as $event ) {
+				// Get event meta.
+				$meta_data             = $event->GetMetaArray();
+				$meta_data['UserData'] = $this->get_event_user_data( $event->GetUsername() );
+
+				$mwp_events->events[ $event->id ]             = new stdClass();
+				$mwp_events->events[ $event->id ]->id         = $event->id;
+				$mwp_events->events[ $event->id ]->alert_id   = $event->alert_id;
+				$mwp_events->events[ $event->id ]->created_on = $event->created_on;
+				$mwp_events->events[ $event->id ]->meta_data  = $meta_data;
+			}
+		}
+
+		return $mwp_events;
+	}
+
+	/**
+	 * Return user data array of the events.
+	 *
+	 * @param string $username – Username.
+	 * @return stdClass
+	 */
+	public function get_event_user_data( $username ) {
+		// User data.
+		$user_data = new stdClass();
+
+		// Handle WSAL usernames.
+		if ( empty( $username ) ) {
+			$user_data->username = 'System';
+		} elseif ( 'Plugin' === $username ) {
+			$user_data->username = 'Plugin';
+		} elseif ( 'Plugins' === $username ) {
+			$user_data->username = 'Plugins';
+		} elseif ( 'Website Visitor' === $username ) {
+			$user_data->username = 'Website Visitor';
+		} else {
+			// Check WP user.
+			if ( isset( $this->wp_users[ $username ] ) ) {
+				// Retrieve from users cache.
+				$user = $this->wp_users[ $username ];
+			} else {
+				// Get user from WP.
+				$user = get_user_by( 'login', $username );
+
+				// Store the object in class member.
+				$this->wp_users[ $username ] = $user;
+			}
+
+			// Set user data.
+			if ( $user && $user instanceof WP_User ) {
+				$user_data->user_id      = $user->ID;
+				$user_data->username     = $user->user_login;
+				$user_data->first_name   = $user->first_name;
+				$user_data->last_name    = $user->last_name;
+				$user_data->display_name = $user->display_name;
+				$user_data->user_email   = $user->user_email;
+			} else {
+				$user_data->username = 'System';
+			}
+		}
+		return $user_data;
+	}
+
+	/**
 	 * Get latest events from DB.
 	 *
 	 * @since 3.2.4
@@ -695,5 +823,23 @@ final class WSAL_AlertManager {
 			}
 		}
 		return $admin_bar_event;
+	}
+
+	/**
+	 * Return Public Event IDs.
+	 *
+	 * @since 3.3
+	 *
+	 * @return array
+	 */
+	public function get_public_events() {
+		/**
+		 * Filter: `wsal_public_event_ids`
+		 *
+		 * Filter array of public event ids.
+		 *
+		 * @param array $public_events - Array of public event ids.
+		 */
+		return apply_filters( 'wsal_public_event_ids', array( 1000, 1002, 1003, 1004, 1005, 1007, 2101, 2126, 4000, 4001, 4012, 6023, 9073 ) ); // Public events.
 	}
 }

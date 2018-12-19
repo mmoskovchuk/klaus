@@ -192,7 +192,8 @@
 				</div>
 				<div class="col-md-9">
 					<select class="use-captcha" style="width:100%">
-			            <option value="yes"><?php _e( 'Yes', 'yop-poll' );?></option>
+			            <option value="yes"><?php _e( 'Yes, use built in Captcha', 'yop-poll' );?></option>
+						<option value="yes-recaptcha"><?php _e( 'Yes, use reCaptcha', 'yop-poll' );?></option>
 			            <option value="no" selected><?php _e( 'No', 'yop-poll' );?></option>
 			        </select>
 				</div>

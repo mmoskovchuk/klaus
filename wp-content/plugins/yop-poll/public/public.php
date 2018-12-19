@@ -1,10 +1,16 @@
 <?php
 class YOP_Poll_Public {
 	public function __construct() {
+		add_filter( 'script_loader_tag', array( $this, 'clean_recaptcha_url' ), 10, 2 );
 		add_action( 'yop_poll_hourly_event', array( $this, 'cron' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'load_dependencies' ) );
 		add_action( 'init', array( $this, 'load_translation' ) );
 		add_action( 'init', array( $this, 'create_shortcodes' ) );
+	}
+	public function clean_recaptcha_url( $tag, $handle ) {
+		if ( 'yop-reCaptcha' !== $handle )
+        	return $tag;
+		return str_replace( "&#038;", "&", str_replace( ' src', ' async defer src', $tag ) );
 	}
 	public function load_dependencies() {
 		$this->load_styles();
@@ -19,6 +25,14 @@ class YOP_Poll_Public {
 			$plugin_settings_decoded = unserialize( $plugin_settings);
 		}
 		wp_enqueue_script( 'yop-public', YOP_POLL_URL . 'public/assets/js/yop-poll-public.min.js', array( 'jquery' ) );
+		/* add reCaptcha if enabled */
+		$args = array(
+			'render' => 'explicit',
+			'onload' => 'YOPPollOnLoadRecaptcha'
+		);
+		wp_register_script( 'yop-reCaptcha', add_query_arg ( $args, 'https://www.google.com/recaptcha/api.js' ), '', null );
+		wp_enqueue_script( 'yop-reCaptcha' );
+		/* done adding reCaptcha */
 		wp_enqueue_script( 'google-api', 'https://apis.google.com/js/platform.js', array( 'yop-public' ), null );
 		wp_localize_script( 'yop-public', 'objectL10n', array(
 			'yopPollParams' => array(
@@ -27,6 +41,9 @@ class YOP_Poll_Public {
 					'wpLogin' => wp_login_url( admin_url( 'admin-ajax.php?action=yop_poll_record_wordpress_vote' ) )
 				),
 				'apiParams' => array(
+					'reCaptcha' => array(
+						'siteKey' => ( isset( $plugin_settings_decoded['integrations'] ) && isset( $plugin_settings_decoded['integrations']['reCaptcha'] ) && isset( $plugin_settings_decoded['integrations']['reCaptcha']['site_key'] ) ) ? $plugin_settings_decoded['integrations']['reCaptcha']['site_key'] : ''
+					),
 					'facebook' => array(
 						'appId' => isset( $plugin_settings_decoded['integrations']['facebook']['app_id'] )? $plugin_settings_decoded['integrations']['facebook']['app_id'] : ''
 					),

@@ -71,14 +71,25 @@ class YOP_Poll_Basic {
 			$use_captcha[1] = '';
 			$use_captcha[2] = $uid;
 		} else {
-			if ( 'yes' === $poll->meta_data['options']['poll']['useCaptcha'] ) {
-				$use_captcha[0] = '1';
-				$use_captcha[1] = '<div id="yop-poll-captcha-' . $uid . '"></div>';
-				$use_captcha[2] = $uid;
-			} else {
-				$use_captcha[0] = '0';
-				$use_captcha[1] = '';
-				$use_captcha[2] = $uid;
+			switch ( $poll->meta_data['options']['poll']['useCaptcha'] ) {
+				case 'yes': {
+					$use_captcha[0] = '1';
+					$use_captcha[1] = '<div id="yop-poll-captcha-' . $uid . '"></div>';
+					$use_captcha[2] = $uid;
+					break;
+				}
+				case 'yes-recaptcha': {
+					$use_captcha[0] = '2';
+					$use_captcha[1] = '<div id="yop-poll-captcha-' . $uid . '" class="yop-poll-recaptcha"></div>';
+					$use_captcha[2] = $uid;
+					break;
+				}
+				default: {
+					$use_captcha[0] = '0';
+					$use_captcha[1] = '';
+					$use_captcha[2] = $uid;
+					break;
+				}
 			}
 		}
 		return $use_captcha;
@@ -383,10 +394,10 @@ class YOP_Poll_Basic {
 					$total_votes_and_answers = '<div class="basic-stats">'
 													. '<span class="basic-stats-votes">'
 														. '<span class="basic-stats-votes-number">'
-															. $poll->total_submits . '&nbsp;'
+															. $poll->total_submits
 														. '</span>'
 														. '<span>'
-															. sprintf( _n( 'vote', 'votes', $poll->total_submits, 'yop-poll' ), $poll->total_submits )
+															. '&nbsp;' . sprintf( _n( 'vote', 'votes', $poll->total_submits, 'yop-poll' ), $poll->total_submits )
 														. '</span>'
 													. '</span>'
 			        							. '</div>';
@@ -397,7 +408,7 @@ class YOP_Poll_Basic {
 															. $poll->total_submited_answers . '&nbsp;'
 														. '</span>'
 														. '<span>'
-															. sprintf( _n( 'answer', 'answers', $poll->total_submited_answers, 'yop-poll' ), $poll->total_submited_answers )
+															. '&nbsp;' . sprintf( _n( 'answer', 'answers', $poll->total_submited_answers, 'yop-poll' ), $poll->total_submited_answers )
 														. '</span>'
 													. '</span>'
 			        							. '</div>';

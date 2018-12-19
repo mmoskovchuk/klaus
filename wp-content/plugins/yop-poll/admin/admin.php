@@ -8,6 +8,7 @@ class YOP_Poll_Admin {
 		self::$old_version = get_option( 'yop_poll_old_version' );
 		if ( true === is_admin() ) {
             add_filter( 'admin_title', array( &$this, 'change_page_title' ) );
+			add_filter( 'clean_url', array( &$this, 'clean_recaptcha_url' ) );
             add_action( 'admin_menu', array( &$this, 'build_admin_menu' ) );
             add_action( 'plugins_loaded', array( &$this, 'verify_update' ) );
             add_action( 'admin_enqueue_scripts', array( &$this, 'load_dependencies' ) );
@@ -45,6 +46,12 @@ class YOP_Poll_Admin {
 		}
 		Yop_Poll_DbSchema::initialize_tables_names();
 	}
+	public function clean_recaptcha_url( $url ) {
+		if ( false !== strstr( $url, "recaptcha/api.js" ) ) {
+			$url = str_replace( "&#038;", "&", $url );
+		}
+		return $url;
+	}
 	public function verify_update() {
 		$installed_version = get_option( 'yop_poll_version' );
 		if ( $installed_version ) {
@@ -52,11 +59,8 @@ class YOP_Poll_Admin {
 				$maintenance = new YOP_POLL_Maintenance();
 				$maintenance->activate();
 			}
-			if ( true === version_compare( $installed_version, '6.0.0', '==' ) ) {
-				update_option( 'yop_poll_version', '6.0.1' );
-			}
-			if ( true === version_compare( $installed_version, '6.0.1', '==' ) ) {
-				update_option( 'yop_poll_version', '6.0.2' );
+			if ( true === version_compare( $installed_version, '6.0.3', '<' ) ) {
+				update_option( 'yop_poll_version', '6.0.3' );
 			}
 		}
 	}
@@ -203,6 +207,13 @@ class YOP_Poll_Admin {
 			'jquery-ui-dialog',
 			'jquery-ui-datepicker' )
 		);
+		/* add reCaptcha if enabled */
+		$args = array(
+			'render' => 'explicit'
+		);
+		wp_register_script( 'yop-reCaptcha', add_query_arg ( $args, 'https://www.google.com/recaptcha/api.js' ), '', null );
+		wp_enqueue_script( 'yop-reCaptcha' );
+		/* done adding reCaptcha */
 		wp_localize_script( 'yop', 'objectL10n', array(
 			'yopPollParams' => array(
                 'appUrl' => YOP_POLL_URL,
@@ -438,10 +449,10 @@ class YOP_Poll_Admin {
 		if ( current_user_can( 'yop_poll_add' ) ) {
 			$template = YOP_POLL_PATH . 'admin/views/addnewpoll.php';
 			$templates = YOP_Poll_Templates::get_templates();
-			$email_settings = YOP_Poll_Settings::get_email_settings();
 			echo YOP_Poll_View::render( $template, array(
 				'templates' => $templates,
-				'email_settings' => $email_settings,
+				'email_settings' => YOP_Poll_Settings::get_email_settings(),
+				'integrations' => YOP_Poll_Settings::get_integrations(),
 				'date_format' => self::$date_format
 			) );
 		}
@@ -461,6 +472,7 @@ class YOP_Poll_Admin {
 					echo YOP_Poll_View::render( $template, array(
 						'poll' => $poll,
 						'templates' => $templates,
+						'integrations' => YOP_Poll_Settings::get_integrations(),
 						'date_format' => self::$date_format ) );
 				} else {
 					echo __( 'You don\'t have sufficient permissions to access this page', 'yop-poll');
@@ -1183,7 +1195,7 @@ class YOP_Poll_Admin {
             wp_send_json_error( __( 'You are not allowed to perform this action', 'yop-poll' ) );
         }
     }
-    public function manage_settings() {
+	public function manage_settings() {
         if ( current_user_can( 'yop_poll_add' ) ) {
             $template = YOP_POLL_PATH . 'admin/views/viewsettings.php';
             $yop_poll_notification_from_name                = '';
@@ -1205,9 +1217,14 @@ class YOP_Poll_Admin {
                 $yop_poll_notification_subject = ( isset( $unserialized['email'] ) && isset( $unserialized['email']['subject'] ) ) ? $unserialized['email']['subject'] : '';
                 $yop_poll_notification_body = ( isset( $unserialized['email'] ) && isset( $unserialized['email']['message'] ) ) ? $unserialized['email']['message'] : '';
 
-                $yop_poll_media_facebook_integration            = ( isset( $unserialized['integrations'] ) && isset( $unserialized['integrations']['facebook'] ) && isset( $unserialized['integrations']['facebook']['integration'] ) ) ? $unserialized['integrations']['facebook']['integration'] : '';
+				$yop_poll_integrations_reCaptcha            = ( isset( $unserialized['integrations'] ) && isset( $unserialized['integrations']['reCaptcha'] ) && isset( $unserialized['integrations']['reCaptcha']['integration'] ) ) ? $unserialized['integrations']['reCaptcha']['integration'] : '';
+                $yop_poll_integrations_reCaptcha_site_key     = ( isset( $unserialized['integrations'] ) && isset( $unserialized['integrations']['reCaptcha'] ) && isset( $unserialized['integrations']['reCaptcha']['site_key'] ) ) ? $unserialized['integrations']['reCaptcha']['site_key'] : '';
+				$yop_poll_integrations_reCaptcha_secret_key     = ( isset( $unserialized['integrations'] ) && isset( $unserialized['integrations']['reCaptcha'] ) && isset( $unserialized['integrations']['reCaptcha']['secret_key'] ) ) ? $unserialized['integrations']['reCaptcha']['secret_key'] : '';
+
+				$yop_poll_media_facebook_integration            = ( isset( $unserialized['integrations'] ) && isset( $unserialized['integrations']['facebook'] ) && isset( $unserialized['integrations']['facebook']['integration'] ) ) ? $unserialized['integrations']['facebook']['integration'] : '';
                 $yop_poll_media_facebook_integration_app_id     = ( isset( $unserialized['integrations'] ) && isset( $unserialized['integrations']['facebook'] ) && isset( $unserialized['integrations']['facebook']['app_id'] ) ) ? $unserialized['integrations']['facebook']['app_id'] : '';
-                $yop_poll_media_google_integration              = ( isset( $unserialized['integrations'] ) && isset( $unserialized['integrations']['google'] ) && isset( $unserialized['integrations']['google']['integration'] ) ) ? $unserialized['integrations']['google']['integration'] : '';
+
+				$yop_poll_media_google_integration              = ( isset( $unserialized['integrations'] ) && isset( $unserialized['integrations']['google'] ) && isset( $unserialized['integrations']['google']['integration'] ) ) ? $unserialized['integrations']['google']['integration'] : '';
                 $yop_poll_media_google_integration_app_id       = ( isset( $unserialized['integrations'] ) && isset( $unserialized['integrations']['google'] ) && isset( $unserialized['integrations']['google']['app_id'] ) ) ? $unserialized['integrations']['google']['app_id'] : '';
                 $yop_poll_media_google_integration_app_secret   = ( isset( $unserialized['integrations'] ) && isset( $unserialized['integrations']['google'] ) && isset( $unserialized['integrations']['google']['app_secret'] ) ) ? $unserialized['integrations']['google']['app_secret'] : '';
             }
@@ -1217,7 +1234,10 @@ class YOP_Poll_Admin {
                 'yop_poll_notification_recipients' => $yop_poll_notification_recipients,
                 'yop_poll_notification_subject' => $yop_poll_notification_subject,
                 'yop_poll_notification_body' => $yop_poll_notification_body,
-                'yop_poll_media_facebook_integration' => $yop_poll_media_facebook_integration,
+				'yop_poll_integrations_reCaptcha' => $yop_poll_integrations_reCaptcha,
+                'yop_poll_integrations_reCaptcha_site_key' => $yop_poll_integrations_reCaptcha_site_key,
+                'yop_poll_integrations_reCaptcha_secret_key' => $yop_poll_integrations_reCaptcha_secret_key,
+				'yop_poll_media_facebook_integration' => $yop_poll_media_facebook_integration,
                 'yop_poll_media_facebook_integration_app_id' => $yop_poll_media_facebook_integration_app_id,
                 'yop_poll_media_google_integration' => $yop_poll_media_google_integration,
                 'yop_poll_media_google_integration_app_id' => $yop_poll_media_google_integration_app_id,
@@ -1226,7 +1246,7 @@ class YOP_Poll_Admin {
             echo YOP_Poll_View::render( $template, $render_array );
         }
     }
-    public function save_settings () {
+	public function save_settings () {
         if ( current_user_can( 'yop_poll_add' ) ) {
             if ( check_ajax_referer( 'yop-poll-update-settings', '_token', false ) ) {
                 $from_name = sanitize_text_field( wp_unslash( $_POST['from_name'] ) );
@@ -1234,12 +1254,15 @@ class YOP_Poll_Admin {
                 $recipients = sanitize_text_field( wp_unslash( $_POST['recipients'] ) );
                 $subject = sanitize_text_field( wp_unslash( $_POST['subject'] ) );
                 $body = sanitize_text_field( wp_unslash( $_POST['body'] ) );
+				$reCaptcha_integration = sanitize_text_field( wp_unslash( $_POST['reCaptcha_integration'] ) );
+				$reCaptcha_integration_site_key = sanitize_text_field( wp_unslash( $_POST['reCaptcha_integration_site_key'] ) );
+				$reCaptcha_integration_secret_key = sanitize_text_field( wp_unslash( $_POST['reCaptcha_integration_secret_key'] ) );
                 $facebook_integration = sanitize_text_field( wp_unslash( $_POST['facebook_integration'] ) );
                 $facebook_integration_app_id = sanitize_text_field( wp_unslash( $_POST['facebook_integration_app_id'] ) );
                 $google_integration = sanitize_text_field( wp_unslash( $_POST['google_integration'] ) );
                 $google_integration_app_id = sanitize_text_field( wp_unslash( $_POST['google_integration_app_id'] ) );
                 $google_integration_app_secret = sanitize_text_field( wp_unslash( $_POST['google_integration_app_secret'] ) );
-                if( !$from_name || !$from_email || !$recipients || !$subject || !$body || !$facebook_integration  || !$google_integration  ) {
+                if( !$from_name || !$from_email || !$recipients || !$subject || !$body || !$reCaptcha_integration || !$facebook_integration  || !$google_integration  ) {
                     wp_send_json_error( __( 'All fields are required', 'yop-poll' ) );
                 } else {
                     $yop_poll_settings = array(
@@ -1251,9 +1274,14 @@ class YOP_Poll_Admin {
                             'message'    => $body
                         ),
                         'integrations' => array(
+							'reCaptcha' => array(
+								'integration' => $reCaptcha_integration,
+								'site_key' => $reCaptcha_integration_site_key,
+								'secret_key' => $reCaptcha_integration_secret_key
+							),
                             'facebook' => array(
                                 'integration' => $facebook_integration,
-                                'app_id'      => $facebook_integration_app_id,
+                                'app_id'      => $facebook_integration_app_id
                             ),
                             'google'   => array(
                                 'integration' => $google_integration,
@@ -1267,7 +1295,7 @@ class YOP_Poll_Admin {
                     } else {
                         add_option( 'yop_poll_settings', serialize( $yop_poll_settings ) );
                     }
-                    wp_send_json_success( [ 'message' => __( 'Settings updated' ) ] );
+                    wp_send_json_success( [ 'message' => __( 'Settings updated', 'yop-poll' ) ] );
                 }
             } else {
                 wp_send_json_error( __( 'You are not allowed to perform this action', 'yop-poll' ) );

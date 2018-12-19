@@ -1,14 +1,15 @@
 <section class="content-block">
-    <div class="grid-container">
-        <div class="content-block__wrap">
 
-                <!-- GUARANTEES-BLOCK -->
-                <?php get_template_part('includes/inc', 'guarantees-block'); ?>
 
-                <!-- NEWS-BLOCK -->
-                <?php get_template_part('includes/inc', 'news-block'); ?>
+    <!-- GUARANTEES-BLOCK -->
+    <?php get_template_part('includes/inc', 'guarantees-block'); ?>
 
-            </div>
-        </div>
+    <!-- WHAT-ARE-WE-DOING-BLOCK -->
+    <?php get_template_part('includes/inc', 'we-do-block'); ?>
+
+    <!-- NEWS-BLOCK -->
+    <?php get_template_part('includes/inc', 'news-block'); ?>
+
+
     </div>
 </section>
