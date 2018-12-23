@@ -26,8 +26,8 @@ $additional_body_class = 'page-' . $current_page;
 
 <body <?php body_class($additional_body_class); ?>>
 
+<!--PRELOADER-->
 <div id="wptime-plugin-preloader"></div>
-
 <!--HEADER-->
 <header class="header" id="header">
     <div class="grid-container">
@@ -36,8 +36,7 @@ $additional_body_class = 'page-' . $current_page;
         <div class="header__grid-block">
             <div class="header__logo" id="header-logo">
                 <a href="<?php echo get_home_url(); ?>">
-                    <img src="<?php bloginfo('template_url'); ?>/img/logo.jpg"
-                         alt="<?php bloginfo('name'); ?>" class="header__logo-big"/>
+                   KLAUS.IN.UA
                 </a>
             </div>
 
@@ -48,13 +47,13 @@ $additional_body_class = 'page-' . $current_page;
             </div>
 
             <div class="header__social-icon">
-                <a rel="nofollow" href="//www.facebook.com/stoklaus/" target="_blank">
+                <a rel="nofollow" href="//www.facebook.com/stoklaus/" target="_blank" title="facebook">
                     <i class="fab fa-facebook-f fa-2x"></i>
                 </a>
-                <a rel="nofollow" href="//m.me/stoklaus" target="_blank">
+                <a rel="nofollow" href="//m.me/stoklaus" target="_blank" title="messenger">
                     <i class="fab fa-facebook-messenger fa-2x"></i>
                 </a>
-                <a rel="nofollow" href="//www.instagram.com/sto_klaus/" target="_blank">
+                <a rel="nofollow" href="//www.instagram.com/sto_klaus/" target="_blank" title="instagram">
                     <i class="fab fa-instagram fa-2x"></i>
                 </a>
             </div>

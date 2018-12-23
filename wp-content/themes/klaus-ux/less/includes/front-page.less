@@ -17,29 +17,87 @@
   }
   &__bg {
     width: 100%;
-    height: 700px;
+    height: 478px;
     object-fit: cover;
   }
   &__text {
     z-index: 3;
     position: absolute;
-    top: 21%;
+    top: 31%;
     display: grid;
     grid-template-columns: 1fr;
     color: @c2;
     .top-block__desc-h1 {
-      font-size: 58px;
-      text-transform: uppercase;
+      font-family: @comfortaa;
+      font-size: 36px;
+      font-weight: 700;
+      //text-transform: uppercase;
       margin-bottom: 0;
+      color: @c1;
+      //text-shadow: 2px 8px 6px rgba(0,0,0,0.2), 0px -5px 35px rgba(255,255,255,0.3);
+      b {
+        color: #fee;
+        text-shadow: 0 -40px 100px, 0 0 2px, 0 0 1em #ff4444, 0 0 0.5em #ff4444, 0 0 0.1em #ff4444, 0 10px 3px #000;
+      }
+      b span {
+        animation: blink linear infinite 2s;
+      }
+      @keyframes blink {
+        78% {
+          color: inherit;
+          text-shadow: inherit;
+        }
+        79%{
+          color: #333;
+        }
+        80% {
+
+          text-shadow: none;
+        }
+        81% {
+          color: inherit;
+          text-shadow: inherit;
+        }
+        82% {
+          color: #333;
+          text-shadow: none;
+        }
+        83% {
+          color: inherit;
+          text-shadow: inherit;
+        }
+        92% {
+          color: #333;
+          text-shadow: none;
+        }
+        92.5% {
+          color: inherit;
+          text-shadow: inherit;
+        }
+      }
     }
     .top-block__desc-p {
-      font-size: 24px;
+      font-family: @roboto;
+      font-weight: 400;
+      font-size: 21px;
       text-transform: uppercase;
-      color: @c2;
+      color: @c1;
+      clear:both;
+      border:2px solid;
+      border-radius:3px;
+      text-decoration:none;
+      display:block;
+      width:13em;
+      padding:5px 10px;
+      background:rgba(0,0,0,0.2);
+      text-shadow: 2px 8px 6px rgba(0,0,0,0.2), 0px -5px 35px rgba(255,255,255,0.3);
+      box-shadow:0 0 0 3px rgba(0,0,0,0.2);
+      text-align:center;
     }
   }
   &__rating-wrap {
-    background: #1b2840;
+    //background: #1b2840;
+    background: @c2;
     z-index: 3;
     height: 70px;
     position: absolute;
@@ -47,6 +105,8 @@
     width: 100%;
     margin: 0;
     padding: 0;
+    background: #112 url(../img/brick-bg.jpg)  center no-repeat;
+    background-size:cover;
   }
   &__rating {
     max-width: 88vw;
@@ -59,6 +119,7 @@
       align-self: center;
       display: grid;
       color: @c1;
+      font-family: @roboto;
       font-weight: 400;
       letter-spacing: 2px;
     }
@@ -73,6 +134,16 @@
       align-self: center;
     }
   }
+}
+
+#myCanvas {
+  height:250px;
+  width:100%;
+  max-width:99%;
+  min-width:800px;
+  position:absolute;
+  bottom:0;
+
 }
 
 //GUARANTEES BLOCK
@@ -94,6 +165,7 @@
     justify-self: center;
   }
   &__item-title {
+    font-family: @roboto;
     font-weight: 500;
     color: #253b64;
     margin-bottom: 10px;
@@ -137,6 +209,7 @@
   }
   &__item-title {
     color: @c1;
+    font-family: @roboto;
     font-size: 14px;
     font-weight: 700;
     text-transform: uppercase;
