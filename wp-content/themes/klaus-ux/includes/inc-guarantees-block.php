@@ -26,12 +26,12 @@
                         </defs>
                         <g>
                             <g transform="translate(-1177 -732)"></g>
-                            <g transform="translate(-1177 -732)">
+                            <g fill="#2798f3" transform="translate(-1177 -732)">
                                 <g>
-                                    <use fill="#8195da" xlink:href="#6vuva"></use>
+                                    <use fill="#fff" xlink:href="#6vuva"></use>
                                 </g>
                                 <g>
-                                    <use fill="#8195da" xlink:href="#6vuvb"></use>
+                                    <use fill="#fff" xlink:href="#6vuvb"></use>
                                 </g>
                                 <g>
                                     <use xlink:href="#6vuvc"></use>
@@ -74,14 +74,14 @@
                         </defs>
                         <g>
                             <g transform="translate(-777 -732)"></g>
-                            <g transform="translate(-777 -732)">
+                            <g fill="#fff" transform="translate(-777 -732)">
                                 <g>
-                                    <use fill="#8195da" xlink:href="#ueu4a"></use>
+                                    <use fill="#201c29" xlink:href="#ueu4a"></use>
                                 </g>
                                 <g>
                                     <use xlink:href="#ueu4b"></use>
                                 </g>
-                                <g>
+                                <g fill="#2196f3">
                                     <use xlink:href="#ueu4c"></use>
                                 </g>
                             </g>
@@ -111,13 +111,13 @@
                             <g transform="translate(-377 -734)">
                                 <g>
                                     <g>
-                                        <use fill="#2196f3" xlink:href="#18y0a"></use>
+                                        <use fill="#fff" xlink:href="#18y0a"></use>
                                     </g>
                                     <g>
-                                        <use fill="#233769" xlink:href="#18y0b"></use>
+                                        <use fill="#2295f0" xlink:href="#18y0b"></use>
                                     </g>
                                     <g>
-                                        <use fill="#233769" xlink:href="#18y0c"></use>
+                                        <use fill="#2295f0" xlink:href="#18y0c"></use>
                                     </g>
                                 </g>
                             </g>

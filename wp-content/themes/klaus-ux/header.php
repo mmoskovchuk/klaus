@@ -28,8 +28,9 @@ $additional_body_class = 'page-' . $current_page;
 
 <!--PRELOADER-->
 <div id="wptime-plugin-preloader"></div>
+
 <!--HEADER-->
-<header class="header" id="header">
+<header class="header header-fixed" id="header">
     <div class="grid-container">
 
 
@@ -43,7 +44,7 @@ $additional_body_class = 'page-' . $current_page;
             <div class="header__tel"><a href="tel:+380672970487">(067) 297-04-87</a></div>
 
             <div class="header__mail">
-                <a href="mailto:sto@klaus.in.ua">sto@klaus.in.ua</a>
+                <a href="mailto:garage@klaus.in.ua">garage@klaus.in.ua</a>
             </div>
 
             <div class="header__social-icon">

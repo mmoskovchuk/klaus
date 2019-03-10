@@ -1,3 +1,4 @@
+<div class="slanting-bg"></div>
 <div class="we-do__wrap">
     <div class="grid-container">
         <div class="we-do">
@@ -5,7 +6,8 @@
             <div class="we-do__item">
                 <h2>ЧТО МЫ ДЕЛАЕМ?</h2>
                 <div class="we-do__item-desc">
-                    <p>Компания «KLAUS.IN.UA» – это люди, которые любят автомобили. Обратившись к нам, Вы не ошибетесь в своем
+                    <p>Компания «KLAUS.IN.UA» – это люди, которые любят автомобили. Обратившись к нам, Вы не ошибетесь в
+                        своем
                         выборе
                         и останетесь довольны полученным результатом. Мы сможем предоставить Вам тех специалистов,
                         которые
@@ -20,12 +22,17 @@
                 <?php while ($we_do_children->have_posts()): $we_do_children->the_post(); ?>
 
                     <div class="we-do__item">
-                        <a href="<?php echo get_the_permalink(); ?>">
-                            <?php if (has_post_thumbnail()) {
-                                echo the_post_thumbnail();
-                            } ?>
-                            <span class="we-do__item-title"><?php echo get_the_title() ?></span>
-                        </a>
+                        <ul>
+                            <li class="we-do__item_li">
+                                <?php if (has_post_thumbnail()) {
+                                    echo the_post_thumbnail();
+                                } ?>
+                                <a class="we-do__item_a" href="<?php echo get_the_permalink(); ?>">
+                                    <p class="we-do__item-title"><?php echo get_the_title() ?></p>
+                                    <span class="we-do__item-desc">description</span>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
 
                 <?php endwhile; ?>

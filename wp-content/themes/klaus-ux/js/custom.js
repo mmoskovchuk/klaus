@@ -1,5 +1,64 @@
 "use strict";
 
+
+//ANIMATED HEADER
+//-------------------------------------------------
+(function($) {
+    var fixedItem = $('#header'),
+        animeClass = 'animated',
+        fixedClass = 'fixed',
+        window_width = 768,
+        is_fixed = $('.header-fixed').size(),
+        minMarginTop;
+
+    if (fixedItem.size()) {
+
+        var scrollTopValue = function() {
+            return $(window).scrollTop()
+        };
+
+        var addCustomClass = function(cls) {
+            fixedItem.addClass(cls);
+        };
+
+        var removeCustomClass = function(cls) {
+            fixedItem.removeClass(cls);
+        };
+
+        var toggleAnimeFunc = function() {
+
+            minMarginTop = fixedItem.height();
+
+            if (scrollTopValue() > minMarginTop) {
+                addCustomClass(animeClass);
+            } else if (scrollTopValue() === 0) {
+                removeCustomClass(animeClass);
+            }
+        };
+
+        $(window).on('scroll', toggleAnimeFunc);
+        $(window).on('load', toggleAnimeFunc);
+
+        if (!is_fixed) {
+            var toggleFixedFunc = function() {
+                minMarginTop = fixedItem.height();
+                if (scrollTopValue() > 0) {
+                    addCustomClass(fixedClass);
+                    $('body').css({marginTop:minMarginTop})
+                } else if (scrollTopValue() === 0) {
+                    removeCustomClass(fixedClass);
+                    $('body').css({marginTop:0});
+                }
+            };
+
+            $(window).on('scroll', toggleFixedFunc);
+            $(window).on('load', toggleFixedFunc);
+        }
+    }
+
+})(jQuery);
+
+
 //SCROLL TOP BUTTON
 //-------------------------------------------------
 (function ($) {
@@ -133,9 +192,10 @@ jQuery(document).ready(function ($) {
 })(jQuery);
 
 
-//
+//smoke top block
 
 
+/*
 console.clear();
 
 canvasWidth = 1800;
@@ -274,4 +334,4 @@ function randOffset(n, variance)
 function clog(s)
 {
     console.log(s);
-}
+}*/
