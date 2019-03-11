@@ -195,7 +195,6 @@ jQuery(document).ready(function ($) {
 //smoke top block
 
 
-/*
 console.clear();
 
 canvasWidth = 1800;
@@ -334,4 +333,4 @@ function randOffset(n, variance)
 function clog(s)
 {
     console.log(s);
-}*/
+}

@@ -23,13 +23,11 @@
 
                     <div class="we-do__item">
                         <ul>
-                            <li class="we-do__item_li">
-                                <?php if (has_post_thumbnail()) {
-                                    echo the_post_thumbnail();
-                                } ?>
+                            <li class="we-do__item_li" style="background-image:url('<?php if (has_post_thumbnail()) {echo get_the_post_thumbnail_url('','large');}?>');">
+
                                 <a class="we-do__item_a" href="<?php echo get_the_permalink(); ?>">
                                     <p class="we-do__item-title"><?php echo get_the_title() ?></p>
-                                    <span class="we-do__item-desc">description</span>
+                                    <span class="we-do__item-desc-2">description</span>
                                 </a>
                             </li>
                         </ul>

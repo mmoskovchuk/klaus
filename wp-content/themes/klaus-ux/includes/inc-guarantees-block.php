@@ -129,6 +129,7 @@
                     <div class="guarantees__item-subtitle">Проверяем каждую машину перед передачей клиенту.</div>
                 </div>
             </div>
+            <div class="guarantees__down-bg"></div>
         </div>
     </div>
 </div>
